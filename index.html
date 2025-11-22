@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- ==========================================
+         SEO & METADATA
+         ========================================== -->
+    <title>Spotlight Spinner | Random Name Picker & Wheel</title>
+    <meta name="description" content="The best free online random name picker. Create custom wheels, make random decisions, and have fun. Ideal for teachers, raffles, and games.">
+    <meta name="keywords" content="wheel of names, random picker, online raffle, decision maker, education tool, random spinner">
+    <meta name="author" content="Hugo Luque">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://spotlightspinner.com/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://spotlightspinner.com/">
+    <meta property="og:title" content="Spotlight Spinner - Online Random Picker">
+    <meta property="og:description" content="Spin the wheel and decide randomly. Free, customizable, and fun tool for raffles and decisions.">
+    <meta property="og:image" content="https://spotlightspinner.com/share-image.png"> 
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://spotlightspinner.com/">
+    <meta name="twitter:title" content="Spotlight Spinner - Random Wheel">
+    <meta name="twitter:description" content="Create exciting raffles in seconds with our interactive wheel.">
+    <meta name="twitter:image" content="https://spotlightspinner.com/share-image.png">
+
+    <!-- iOS Web App Capable -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Spotlight Spinner">
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Spotlight Spinner",
+      "url": "https://spotlightspinner.com",
+      "description": "Free web tool to create custom wheels of fortune and make random selections.",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Hugo Luque"
+      }
+    }
+    </script>
+
+    <!-- ==========================================
+         STYLES & LIBRARIES
+         ========================================== -->
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;800&family=Roboto+Slab:wght@500;700&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            /* Animated Gradient Background */
+            background: linear-gradient(-45deg, #0f172a, #1e3a8a, #7e22ce, #b91c1c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333; 
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .wheel-shadow {
+            filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.6));
+        }
+
+        #pointer-path {
+            transition: fill 0.1s ease;
+        }
+        
+        .pointer-shadow {
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
+        }
+
+        #pointerIcon {
+            transform-origin: 80% 50%; 
+        }
+
+        /* Custom Scrollbar */
+        textarea::-webkit-scrollbar, div::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: #111; }
+        textarea::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb:hover, div::-webkit-scrollbar-thumb { background: #666; }
+
+        /* Tabs */
+        .tab-active { border-bottom: 3px solid #fff; color: #fff; font-weight: 700; }
+        .tab-inactive { color: #888; cursor: pointer; }
+        .tab-inactive:hover { color: #ccc; }
+
+        /* Accessibility Focus */
+        button:focus-visible, a:focus-visible, textarea:focus-visible, input:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col text-gray-100">
+
+    <!-- Header -->
+    <header>
+        <nav class="bg-[#010101] shadow-md p-3 flex justify-between items-center z-30 relative border-b border-gray-800" aria-label="Main Navigation">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white font-bold shadow-sm select-none" aria-hidden="true">S</div>
+                <h1 class="text-xl font-bold tracking-tight text-white">Spotlight Spinner</h1>
+            </div>
+            
+            <div class="flex items-center gap-4 text-sm font-semibold text-gray-400">
+                <!-- Language Dropdown -->
+                <div class="relative group">
+                    <button class="flex items-center gap-1 hover:text-white transition-colors p-2 rounded" id="langBtn" aria-label="Change language" aria-haspopup="true">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        <span id="currentLangLabel">English</span>
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border border-gray-100 cursor-pointer text-gray-800">
+                        <div class="py-1" role="menu">
+                            <button onclick="setLanguage('en')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">English</button>
+                            <button onclick="setLanguage('es')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">Español</button>
+                            <button onclick="setLanguage('fr')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">Français</button>
+                            <button onclick="setLanguage('de')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100" role="menuitem">Deutsch</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex gap-4">
+                    <button onclick="openCustomizeModal()" class="hover:text-white flex items-center gap-1 transition-colors p-2 rounded" aria-label="Customize wheel">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> 
+                        <span data-translate="nav_customize">Customize</span>
+                    </button>
+                    <button onclick="resetWheel()" class="hover:text-white flex items-center gap-1 transition-colors p-2 rounded" aria-label="New wheel">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> 
+                        <span data-translate="nav_new">New</span>
+                    </button>
+                    <button onclick="openShareModal()" class="hover:text-white flex items-center gap-1 transition-colors p-2 rounded" aria-label="Share wheel">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> 
+                        <span data-translate="nav_share">Share</span>
+                    </button>
+                    <button onclick="toggleFullScreen()" class="hover:text-white flex items-center gap-1 transition-colors p-2 rounded" aria-label="Toggle fullscreen">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+                            <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
+                            <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
+                            <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+                        </svg>
+                        <span data-translate="nav_fullscreen">Fullscreen</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hidden Inputs -->
+    <input type="file" id="imageInput" accept="image/*" class="hidden" aria-hidden="true">
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        
+        <!-- Mobile Show Panel -->
+        <button id="showPanelBtn" onclick="showPanel()" class="hidden absolute top-4 right-4 z-40 bg-white shadow-lg p-3 rounded-full hover:bg-gray-100 transition-all duration-200 group focus:ring-2 focus:ring-indigo-500" title="Show Controls" aria-label="Show controls">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600 group-hover:text-indigo-600">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+        </button>
+
+        <!-- Left Column: Wheel -->
+        <section class="flex-1 relative flex items-center justify-center p-4 lg:p-10 select-none overflow-hidden" aria-label="Wheel Area">
+            
+            <!-- Wheel Container (Clickable Area) -->
+            <div class="relative w-full max-w-[600px] aspect-square cursor-pointer hover:scale-[1.01] transition-transform duration-200" 
+                 id="wheel-container"
+                 onclick="startSpin()">
+                 
+                <canvas id="wheelCanvas" class="w-full h-full wheel-shadow rounded-full"></canvas>
+                
+                <!-- Center Hub Button (SPIN) -->
+                <button onclick="startSpin()" 
+                        class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] z-30 flex items-center justify-center border-4 border-white transition-all duration-200 hover:scale-110 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] active:scale-95 group overflow-hidden focus:ring-4 focus:ring-white/50 focus:outline-none"
+                        aria-label="Spin the wheel">
+                    <span class="font-extrabold text-white text-lg tracking-wide group-hover:animate-pulse" data-translate="btn_center_spin">Spin!</span>
+                    <!-- Shine effect -->
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 rounded-full"></div>
+                </button>
+
+                <!-- Pointer -->
+                <div class="absolute top-1/2 -right-10 transform -translate-y-1/2 z-20 pointer-events-none pointer-shadow" aria-hidden="true">
+                    <svg id="pointerIcon" width="70" height="40" viewBox="0 0 70 40" style="overflow: visible;">
+                        <rect x="6" y="18" width="24" height="4" rx="2" fill="#f3f4f6" stroke="#1f2937" stroke-width="1.5"/>
+                        <path id="pointer-path" d="M25 20 L 65 2 L 65 38 Z" fill="#333" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                        <circle cx="55" cy="20" r="2" fill="#e5e7eb" stroke="#374151" stroke-width="1"/>
+                    </svg>
+                </div>
+            </div>
+            
+        </section>
+
+        <!-- Right Column: Controls -->
+        <aside id="rightPanel" class="w-full lg:w-[400px] bg-[#020202] shadow-2xl z-20 flex flex-col h-[50vh] lg:h-auto border-l border-gray-800 transition-all duration-300 text-white" aria-label="Control Panel">
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-800 bg-white/5" role="tablist">
+                <button class="flex-1 py-3 text-center text-sm uppercase tracking-wider tab-active hover:bg-white/10 transition-colors focus:outline-none" id="entriesTab" onclick="switchTab('entries')" role="tab" aria-selected="true" aria-controls="entriesArea">
+                    <span data-translate="tab_entries">Entries</span> 
+                    <span class="bg-gray-700 px-2 py-0.5 rounded-full text-xs ml-1 text-white" id="countBadge">12</span>
+                </button>
+                <button class="flex-1 py-3 text-center text-sm uppercase tracking-wider tab-inactive hover:bg-white/10 transition-colors focus:outline-none" id="resultsTab" onclick="switchTab('results')" role="tab" aria-selected="false" aria-controls="resultsArea">
+                    <span data-translate="tab_results">Results</span>
+                    <span class="bg-gray-700 px-2 py-0.5 rounded-full text-xs ml-1 text-white" id="resultsCountBadge">0</span>
+                </button>
+                <div class="px-4 flex items-center">
+                    <input type="checkbox" class="mr-2 cursor-pointer accent-indigo-500" id="hideCheck" aria-label="Hide panel"> 
+                    <label for="hideCheck" class="text-xs text-gray-400 cursor-pointer select-none" data-translate="tab_hide">Hide</label>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="p-3 bg-transparent border-b border-gray-800 flex gap-2 flex-wrap" id="toolbar" role="toolbar">
+                <button onclick="shuffleNames()" class="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded shadow-sm text-sm font-bold transition-colors focus:ring-2 focus:ring-white">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                    <span data-translate="btn_shuffle">Shuffle</span>
+                </button>
+                <button onclick="sortNames()" class="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded shadow-sm text-sm font-bold transition-colors focus:ring-2 focus:ring-white">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>
+                    <span data-translate="btn_sort">Sort</span>
+                </button>
+                <button onclick="addImage()" class="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded shadow-sm text-sm font-bold transition-colors focus:ring-2 focus:ring-white">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <span data-translate="btn_image">Add image</span>
+                </button>
+            </div>
+
+            <!-- Panel Content -->
+            <div class="flex-1 p-4 relative bg-transparent overflow-hidden">
+                <!-- Entries -->
+                <div id="entriesArea" class="w-full h-full" role="tabpanel" aria-labelledby="entriesTab">
+                    <!-- UPDATED: New default names list -->
+                    <textarea id="namesInput" aria-label="Names list" class="w-full h-full border border-gray-700/50 rounded-lg p-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none text-lg leading-relaxed shadow-inner font-medium text-gray-200 bg-[#0a0a0a] placeholder-gray-600" spellcheck="false">Alejandra
+Carlos
+Flor
+Grisel
+Hugh
+Isabel
+Jessy
+Kiara
+Luis
+Maggy
+Rodrigo
+Samara</textarea>
+                </div>
+                <!-- Results -->
+                <div id="resultsArea" class="w-full h-full hidden bg-[#0a0a0a] rounded-lg p-4 border border-gray-700/50 overflow-y-auto" role="tabpanel" aria-labelledby="resultsTab">
+                    <ul id="resultsList" class="space-y-2"></ul>
+                    <div id="noResultsMsg" class="text-center text-gray-600 mt-10 italic flex flex-col items-center">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        <span data-translate="no_results">No results yet</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="p-2 border-t border-gray-800 text-right text-xs text-white bg-transparent">
+                <span data-translate="footer_created">Skills Wise | Developed by Hugo Luque</span>
+            </footer>
+        </aside>
+    </main>
+
+    <!-- Modals (Hidden by default) -->
+    <!-- Customize Modal -->
+    <div id="customizeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 hidden backdrop-blur-sm opacity-0 transition-opacity duration-300" role="dialog" aria-labelledby="cust_title" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full transform scale-90 transition-all duration-300 text-gray-800" id="customizeContent">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h2 class="text-xl font-bold text-gray-800" id="cust_title" data-translate="cust_title">Customize Wheel</h2>
+                <button onclick="closeCustomizeModal()" class="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-100" aria-label="Close"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="space-y-5">
+                <fieldset>
+                    <legend class="block text-sm font-bold text-gray-700 mb-2" data-translate="cust_theme">Color Theme</legend>
+                    <div class="grid grid-cols-5 gap-2">
+                        <button onclick="setTheme('vivid')" class="w-full aspect-square rounded-full bg-gradient-to-br from-blue-500 to-red-500 hover:scale-110 transition-transform shadow-sm ring-2 ring-transparent focus:ring-indigo-500" title="Vivid" aria-label="Vivid Theme"></button>
+                        <button onclick="setTheme('neon')" class="w-full aspect-square rounded-full bg-gradient-to-br from-fuchsia-500 to-green-400 hover:scale-110 transition-transform shadow-sm ring-2 ring-transparent focus:ring-indigo-500" title="Neon" aria-label="Neon Theme"></button>
+                        <button onclick="setTheme('dark')" class="w-full aspect-square rounded-full bg-gradient-to-br from-gray-800 to-gray-900 hover:scale-110 transition-transform shadow-sm ring-2 ring-transparent focus:ring-indigo-500" title="Dark" aria-label="Dark Theme"></button>
+                        <button onclick="setTheme('light')" class="w-full aspect-square rounded-full bg-gradient-to-br from-gray-100 to-white hover:scale-110 transition-transform shadow-sm ring-2 ring-transparent focus:ring-indigo-500 border border-gray-200" title="Light" aria-label="Light Theme"></button>
+                        <button onclick="setTheme('pastel')" class="w-full aspect-square rounded-full bg-gradient-to-br from-pink-200 to-blue-200 hover:scale-110 transition-transform shadow-sm ring-2 ring-transparent focus:ring-indigo-500" title="Pastel" aria-label="Pastel Theme"></button>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1 text-center" id="currentThemeName">Current: Vivid</div>
+                </fieldset>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="fontSizeInput" class="block text-sm font-bold text-gray-700 mb-1" data-translate="cust_size">Font Size</label>
+                        <input type="range" id="fontSizeInput" min="12" max="48" value="24" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                        <div class="text-right text-xs text-gray-500" id="fontSizeVal">24px</div>
+                    </div>
+                    <div>
+                        <label for="fontColorInput" class="block text-sm font-bold text-gray-700 mb-1" data-translate="cust_color">Text Color</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="fontColorInput" value="#ffffff" class="h-8 w-full cursor-pointer border rounded">
+                        </div>
+                    </div>
+                </div>
+                 <div>
+                    <label for="fontFamilyInput" class="block text-sm font-bold text-gray-700 mb-1" data-translate="cust_font">Font Style</label>
+                    <select id="fontFamilyInput" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="'Quicksand', sans-serif">Modern (Quicksand)</option>
+                        <option value="'Roboto Slab', serif">Classic (Serif)</option>
+                        <option value="'Courier Prime', monospace">Typewriter (Mono)</option>
+                    </select>
+                </div>
+                <div class="pt-2">
+                    <button onclick="applyCustomization()" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded hover:bg-indigo-700 transition-colors" data-translate="btn_apply">Apply Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div id="winnerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 hidden backdrop-blur-sm opacity-0 transition-opacity duration-300" role="dialog" aria-labelledby="winnerTextTitle" aria-modal="true">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform scale-90 transition-all duration-300 border-4 border-white" id="modalContent">
+            <h2 class="text-3xl font-bold mb-2 transition-colors duration-200" id="winnerTextTitle" data-translate="modal_winner_title">We have a winner!</h2>
+            <div class="flex justify-center items-center py-6 min-h-[100px]" id="winnerContainer">
+                 <div class="text-6xl font-extrabold transition-colors duration-200" id="winnerName">Name</div>
+            </div>
+            <div class="flex gap-4 justify-center mt-6">
+                <button onclick="closeModal()" class="px-6 py-2 bg-white/90 hover:bg-white text-gray-800 rounded-lg font-bold transition-colors shadow-sm" data-translate="btn_close">Close</button>
+                <button onclick="removeWinner()" class="px-6 py-2 bg-white/90 hover:bg-white text-red-600 rounded-lg font-bold transition-colors shadow-sm" data-translate="btn_remove">Remove</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 hidden backdrop-blur-sm opacity-0 transition-opacity duration-300" role="dialog" aria-labelledby="share_title" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full transform scale-90 transition-all duration-300 text-gray-800" id="shareContent">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h2 class="text-xl font-bold text-gray-800" id="share_title" data-translate="share_title">Share this wheel</h2>
+                <button onclick="closeShareModal()" class="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-100" aria-label="Close"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="shareUrl" class="block text-sm font-medium text-gray-700 mb-1" data-translate="share_link_label">Link to this wheel</label>
+                    <div class="flex shadow-sm rounded-md">
+                        <input type="text" id="shareUrl" readonly class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border border-gray-300 bg-gray-50 text-sm text-gray-600 focus:outline-none" value="https://spotlightspinner.com/u/my-wheel">
+                        <button onclick="copyShareLink()" class="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-100 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none"><span id="copyBtnText" data-translate="share_copy_btn">Copy</span></button>
+                    </div>
+                </div>
+                <div>
+                    <p class="block text-sm font-medium text-gray-700 mb-2" data-translate="share_social_label">Share via</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="shareTo('whatsapp')" class="flex flex-col items-center justify-center p-3 border rounded-lg hover:bg-green-50 hover:border-green-200 transition-colors group" aria-label="Share on WhatsApp">
+                            <div class="bg-green-500 text-white p-2 rounded-full mb-1 group-hover:scale-110 transition-transform"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></div>
+                            <span class="text-xs text-gray-600">WhatsApp</span>
+                        </button>
+                        <button onclick="shareTo('twitter')" class="flex flex-col items-center justify-center p-3 border rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors group" aria-label="Share on X">
+                            <div class="bg-black text-white p-2 rounded-full mb-1 group-hover:scale-110 transition-transform"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
+                            <span class="text-xs text-gray-600">X</span>
+                        </button>
+                        <button onclick="shareTo('facebook')" class="flex flex-col items-center justify-center p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors group" aria-label="Share on Facebook">
+                            <div class="bg-blue-600 text-white p-2 rounded-full mb-1 group-hover:scale-110 transition-transform"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></div>
+                            <span class="text-xs text-gray-600">Facebook</span>
+                        </button>
+                        <button onclick="shareTo('email')" class="flex flex-col items-center justify-center p-3 border rounded-lg hover:bg-purple-50 hover:border-purple-200 transition-colors group" aria-label="Share via Email">
+                            <div class="bg-purple-600 text-white p-2 rounded-full mb-1 group-hover:scale-110 transition-transform"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
+                            <span class="text-xs text-gray-600">Email</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Javascript -->
+    <script>
+        // --- Translations ---
+        const translations = {
+            en: {
+                nav_customize: "Customize",
+                nav_new: "New",
+                nav_share: "Share",
+                nav_fullscreen: "Fullscreen",
+                tab_entries: "Entries",
+                tab_results: "Results",
+                tab_hide: "Hide",
+                btn_shuffle: "Shuffle",
+                btn_sort: "Sort",
+                btn_image: "Add image",
+                footer_created: "Skills Wise | Developed by Hugo Luque",
+                modal_winner_title: "We have a winner!",
+                btn_close: "Close",
+                btn_remove: "Remove",
+                btn_apply: "Apply Changes",
+                wheel_click_spin: "Click to spin",
+                wheel_ctrl_enter: "or press ctrl+enter",
+                no_results: "No results yet",
+                reset_confirm: "Are you sure? This will clear the results and restore default names.",
+                share_title: "Share this wheel",
+                share_link_label: "Link to this wheel",
+                share_copy_btn: "Copy",
+                share_social_label: "Share via",
+                share_copied: "Copied!",
+                cust_title: "Customize Wheel",
+                cust_theme: "Color Theme",
+                cust_size: "Font Size",
+                cust_color: "Text Color",
+                cust_font: "Font Style",
+                btn_center_spin: "Spin!"
+            },
+            es: {
+                nav_customize: "Personalizar",
+                nav_new: "Nuevo",
+                nav_share: "Compartir",
+                nav_fullscreen: "Pantalla completa",
+                tab_entries: "Entradas",
+                tab_results: "Resultados",
+                tab_hide: "Ocultar",
+                btn_shuffle: "Barajar",
+                btn_sort: "Ordenar",
+                btn_image: "Añadir imagen",
+                footer_created: "Skills Wise | Developed by Hugo Luque",
+                modal_winner_title: "¡Tenemos un ganador!",
+                btn_close: "Cerrar",
+                btn_remove: "Remover",
+                btn_apply: "Aplicar Cambios",
+                wheel_click_spin: "Clic para girar",
+                wheel_ctrl_enter: "o presiona ctrl+enter",
+                no_results: "Aún no hay resultados",
+                reset_confirm: "¿Estás seguro? Esto borrará los resultados y restaurará los nombres predeterminados.",
+                share_title: "Compartir esta rueda",
+                share_link_label: "Enlace a esta rueda",
+                share_copy_btn: "Copiar",
+                share_social_label: "Compartir vía",
+                share_copied: "¡Copiado!",
+                cust_title: "Personalizar Rueda",
+                cust_theme: "Tema de Color",
+                cust_size: "Tamaño de Fuente",
+                cust_color: "Color de Texto",
+                cust_font: "Estilo de Fuente",
+                btn_center_spin: "Spin!"
+            },
+            fr: {
+                nav_customize: "Personnaliser",
+                nav_new: "Nouveau",
+                nav_share: "Partager",
+                nav_fullscreen: "Plein écran",
+                tab_entries: "Entrées",
+                tab_results: "Résultats",
+                tab_hide: "Masquer",
+                btn_shuffle: "Mélanger",
+                btn_sort: "Trier",
+                btn_image: "Ajouter image",
+                footer_created: "Skills Wise | Developed by Hugo Luque",
+                modal_winner_title: "Nous avons un gagnant !",
+                btn_close: "Fermer",
+                btn_remove: "Supprimer",
+                btn_apply: "Appliquer",
+                wheel_click_spin: "Cliquez pour tourner",
+                wheel_ctrl_enter: "ou appuyez sur ctrl+entrée",
+                no_results: "Pas encore de résultats",
+                reset_confirm: "Êtes-vous sûr ? Cela effacera les résultats et rétablira les noms par défaut.",
+                share_title: "Partager cette roue",
+                share_link_label: "Lien vers cette roue",
+                share_copy_btn: "Copier",
+                share_social_label: "Partager via",
+                share_copied: "Copié !",
+                cust_title: "Personnaliser la Roue",
+                cust_theme: "Thème de Couleur",
+                cust_size: "Taille de Police",
+                cust_color: "Couleur du Texte",
+                cust_font: "Style de Police",
+                btn_center_spin: "Spin!"
+            },
+            de: {
+                nav_customize: "Anpassen",
+                nav_new: "Neu",
+                nav_share: "Teilen",
+                nav_fullscreen: "Vollbild",
+                tab_entries: "Einträge",
+                tab_results: "Ergebnisse",
+                tab_hide: "Ausblenden",
+                btn_shuffle: "Mischen",
+                btn_sort: "Sortieren",
+                btn_image: "Bild hinzufügen",
+                footer_created: "Skills Wise | Developed by Hugo Luque",
+                modal_winner_title: "Wir haben einen Gewinner!",
+                btn_close: "Schließen",
+                btn_remove: "Entfernen",
+                btn_apply: "Anwenden",
+                wheel_click_spin: "Zum Drehen klicken",
+                wheel_ctrl_enter: "oder Strg+Enter drücken",
+                no_results: "Noch keine Ergebnisse",
+                reset_confirm: "Bist du sicher? Dadurch werden die Ergebnisse gelöscht und die Standardnamen wiederhergestellt.",
+                share_title: "Dieses Rad teilen",
+                share_link_label: "Link zu diesem Rad",
+                share_copy_btn: "Kopieren",
+                share_social_label: "Teilen über",
+                share_copied: "Kopiert!",
+                cust_title: "Rad anpassen",
+                cust_theme: "Farbthema",
+                cust_size: "Schriftgröße",
+                cust_color: "Textfarbe",
+                cust_font: "Schriftart",
+                btn_center_spin: "Spin!"
+            }
+        };
+
+        let currentLang = 'en'; 
+
+        // --- Color Themes ---
+        const themes = {
+            vivid: ['#1565C0', '#C62828', '#F9A825', '#2E7D32', '#EF6C00', '#4527A0', '#00838F', '#AD1457'], 
+            neon: ['#FF00FF', '#00FF00', '#00FFFF', '#FFFF00', '#FF0099', '#9D00FF'],
+            dark: ['#1A237E', '#B71C1C', '#1B5E20', '#4A148C', '#3E2723', '#263238', '#006064', '#311B92'],
+            light: ['#90CAF9', '#EF9A9A', '#FFF59D', '#A5D6A7', '#FFCC80', '#CE93D8', '#80DEEA', '#F48FB1'],
+            pastel: ['#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF', '#EECBFF']
+        };
+
+        // --- State ---
+        let names = [];
+        let results = []; 
+        let canvas = document.getElementById('wheelCanvas');
+        let ctx = canvas.getContext('2d');
+        let currentRotation = 0; 
+        let isSpinning = false;
+        let spinVelocity = 0;
+        let lastTimestamp = 0;
+        let winnerIndex = -1;
+        let audioCtx = null;
+        let showIntroText = true; 
+        
+        // Pointer Physics State
+        let pointerAngle = 0; 
+        let pointerVelocity = 0; 
+        
+        // Images State
+        let loadedImages = {}; 
+        let imageCounter = 1;
+
+        // Customization State
+        let wheelColors = themes.vivid;
+        let wheelFontSize = 24;
+        let wheelFontColor = "#ffffff";
+        let wheelFontFamily = "'Quicksand', sans-serif";
+        let currentThemeName = "vivid";
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                if (!isSpinning && names.length > 0) startSpin();
+            }
+        });
+
+        function init() {
+            updateNamesFromInput();
+            document.getElementById('shareUrl').value = window.location.href;
+            resizeCanvas();
+            requestAnimationFrame(animateLoop);
+            window.addEventListener('resize', resizeCanvas);
+            
+            document.getElementById('hideCheck').addEventListener('change', function(e) {
+                togglePanel(e.target.checked);
+            });
+
+            document.getElementById('fontSizeInput').addEventListener('input', (e) => {
+                document.getElementById('fontSizeVal').innerText = e.target.value + 'px';
+            });
+
+             document.getElementById('namesInput').addEventListener('input', () => {
+                if(showIntroText) {
+                    showIntroText = false;
+                    if(!isSpinning) drawWheel();
+                }
+            });
+
+            document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+            
+            // Inicializar idioma
+            setLanguage(currentLang);
+        }
+
+        function addImage() {
+            document.getElementById('imageInput').click();
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const id = `📷 Img-${imageCounter++}`;
+                        loadedImages[id] = img;
+                        
+                        const textarea = document.getElementById('namesInput');
+                        const prefix = textarea.value.trim() === "" ? "" : "\n";
+                        textarea.value += prefix + id;
+                        
+                        updateNamesFromInput();
+                        if(!isSpinning) drawWheel();
+                    }
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+            e.target.value = '';
+        }
+
+        function resetWheel() {
+            if (confirm(translations[currentLang].reset_confirm)) {
+                // UPDATED: New default names list in reset logic
+                const defaults = "Alejandra\nCarlos\nFlor\nGrisel\nHugh\nIsabel\nJessy\nKiara\nLuis\nMaggy\nRodrigo\nSamara";
+                document.getElementById('namesInput').value = defaults;
+                loadedImages = {}; 
+                updateNamesFromInput();
+                
+                results = [];
+                updateResultsView();
+
+                showIntroText = true; 
+                if (!isSpinning) drawWheel();
+                switchTab('entries'); 
+            }
+        }
+
+        function openCustomizeModal() {
+            const modal = document.getElementById('customizeModal');
+            const content = document.getElementById('customizeContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-90');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeCustomizeModal() {
+            const modal = document.getElementById('customizeModal');
+            const content = document.getElementById('customizeContent');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-90');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function setTheme(themeName) {
+            wheelColors = themes[themeName];
+            currentThemeName = themeName;
+            document.getElementById('currentThemeName').innerText = "Current: " + themeName.charAt(0).toUpperCase() + themeName.slice(1);
+        }
+
+        function applyCustomization() {
+            wheelFontSize = parseInt(document.getElementById('fontSizeInput').value);
+            wheelFontColor = document.getElementById('fontColorInput').value;
+            wheelFontFamily = document.getElementById('fontFamilyInput').value;
+            
+            if(!isSpinning) drawWheel();
+            closeCustomizeModal();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function openShareModal() {
+            const modal = document.getElementById('shareModal');
+            const content = document.getElementById('shareContent');
+            modal.classList.remove('hidden');
+            document.getElementById('shareUrl').value = window.location.href;
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-90');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeShareModal() {
+            const modal = document.getElementById('shareModal');
+            const content = document.getElementById('shareContent');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-90');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('copyBtnText').innerText = translations[currentLang].share_copy_btn;
+            }, 300);
+        }
+
+        function copyShareLink() {
+            const copyText = document.getElementById("shareUrl");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); 
+            navigator.clipboard.writeText(copyText.value);
+            const btnText = document.getElementById('copyBtnText');
+            btnText.innerText = translations[currentLang].share_copied;
+            setTimeout(() => {
+                btnText.innerText = translations[currentLang].share_copy_btn;
+            }, 2000);
+        }
+
+        function shareTo(platform) {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent("¡Mira esta Ruleta de Sorteos!");
+            let shareUrl = '';
+            switch(platform) {
+                case 'whatsapp': shareUrl = `https://wa.me/?text=${text}%20${url}`; break;
+                case 'twitter': shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`; break;
+                case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`; break;
+                case 'email': shareUrl = `mailto:?subject=${text}&body=${url}`; break;
+            }
+            if (shareUrl) window.open(shareUrl, '_blank');
+        }
+
+        function switchTab(tabName) {
+            const entriesTab = document.getElementById('entriesTab');
+            const resultsTab = document.getElementById('resultsTab');
+            const entriesArea = document.getElementById('entriesArea');
+            const resultsArea = document.getElementById('resultsArea');
+
+            if (tabName === 'entries') {
+                entriesTab.classList.add('tab-active');
+                entriesTab.classList.remove('tab-inactive');
+                entriesTab.setAttribute('aria-selected', 'true');
+                resultsTab.classList.remove('tab-active');
+                resultsTab.classList.add('tab-inactive');
+                resultsTab.setAttribute('aria-selected', 'false');
+                entriesArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+            } else {
+                resultsTab.classList.add('tab-active');
+                resultsTab.classList.remove('tab-inactive');
+                resultsTab.setAttribute('aria-selected', 'true');
+                entriesTab.classList.remove('tab-active');
+                entriesTab.classList.add('tab-inactive');
+                entriesTab.setAttribute('aria-selected', 'false');
+                resultsArea.classList.remove('hidden');
+                entriesArea.classList.add('hidden');
+            }
+        }
+
+        function addResult(name) {
+            results.unshift(name); 
+            updateResultsView();
+        }
+
+        function updateResultsView() {
+            const list = document.getElementById('resultsList');
+            const badge = document.getElementById('resultsCountBadge');
+            const noRes = document.getElementById('noResultsMsg');
+            badge.innerText = results.length;
+            if (results.length === 0) {
+                list.innerHTML = '';
+                noRes.classList.remove('hidden');
+            } else {
+                noRes.classList.add('hidden');
+                list.innerHTML = results.map((res, index) => `
+                    <li class="flex items-center justify-between bg-[#1a1a1a] p-3 rounded shadow-sm animate-fade-in border border-gray-700">
+                        <span class="font-bold text-gray-200">${res}</span>
+                        <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+                    </li>
+                `).join('');
+            }
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+            const langLabels = { 'en': 'English', 'es': 'Español', 'fr': 'Français', 'de': 'Deutsch' };
+            document.getElementById('currentLangLabel').innerText = langLabels[lang];
+            if (!isSpinning) drawWheel();
+        }
+
+        function togglePanel(hide) {
+            const panel = document.getElementById('rightPanel');
+            const showBtn = document.getElementById('showPanelBtn');
+            if (hide) {
+                panel.classList.add('hidden');
+                showBtn.classList.remove('hidden');
+            } else {
+                panel.classList.remove('hidden');
+                showBtn.classList.add('hidden');
+            }
+            setTimeout(() => {
+                resizeCanvas();
+                if (!isSpinning) drawWheel();
+            }, 50);
+        }
+
+        function showPanel() {
+            const checkbox = document.getElementById('hideCheck');
+            checkbox.checked = false;
+            togglePanel(false);
+        }
+
+        function getContrastColor(hex) {
+            const r = parseInt(hex.substr(1, 2), 16);
+            const g = parseInt(hex.substr(3, 2), 16);
+            const b = parseInt(hex.substr(5, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#000000' : '#ffffff';
+        }
+
+        function playTickSound() {
+            if (!audioCtx) {
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                } catch(e) {
+                    console.warn("AudioContext not supported");
+                    return;
+                }
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = 'triangle';
+            oscillator.frequency.setValueAtTime(600, audioCtx.currentTime); 
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); 
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.05);
+        }
+
+        function playWinSound() {
+            if (!audioCtx) {
+                 try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                } catch(e) { return; }
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            [440, 554, 659].forEach((freq, i) => {
+                setTimeout(() => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                }, i * 100);
+            });
+        }
+
+        function updateNamesFromInput() {
+            const raw = document.getElementById('namesInput').value;
+            names = raw.split('\n').filter(n => n.trim() !== '');
+            document.getElementById('countBadge').innerText = names.length;
+        }
+
+        function resizeCanvas() {
+            const container = document.getElementById('wheel-container');
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+            ctx.scale(dpr, dpr);
+            if (!isSpinning) drawWheel();
+        }
+
+        function animateLoop(timestamp) {
+            const dt = timestamp - lastTimestamp;
+            lastTimestamp = timestamp;
+
+            // Physics
+            const tension = 0.20; 
+            const damping = 0.25; 
+            const acceleration = -tension * pointerAngle - damping * pointerVelocity;
+            
+            pointerVelocity += acceleration;
+            pointerAngle += pointerVelocity;
+
+            const ptr = document.getElementById('pointerIcon');
+            if(ptr) {
+                ptr.style.transform = `rotate(${pointerAngle}deg)`;
+            }
+
+            if (isSpinning) {
+                currentRotation += spinVelocity;
+                spinVelocity *= 0.985; 
+                const step = (2 * Math.PI) / names.length;
+                const prevIndex = Math.floor((currentRotation - spinVelocity) / step);
+                const currIndex = Math.floor(currentRotation / step);
+                
+                if (prevIndex !== currIndex) {
+                    playTickSound();
+                    // Simular golpe hacia abajo (rotación negativa)
+                    const impactForce = Math.min(25, 12 + (spinVelocity * 50)); 
+                    pointerVelocity -= impactForce; 
+                }
+
+                if (spinVelocity < 0.002) {
+                    isSpinning = false;
+                    determineWinner();
+                }
+            } else {
+                currentRotation += 0.002; 
+            }
+            drawWheel();
+            updatePointerColor(); 
+            requestAnimationFrame(animateLoop);
+        }
+
+        function drawWheel() {
+            if (names.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
+
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            // FIX: Asegurar que el radio nunca sea negativo
+            const rawRadius = Math.min(width, height) / 2 - 10;
+            const radius = Math.max(0, rawRadius); 
+            
+            const step = (2 * Math.PI) / names.length;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Si el radio es 0, no dibujamos para evitar IndexSizeError
+            if (radius <= 0) return;
+
+
+            names.forEach((name, i) => {
+                const startAngle = currentRotation + (i * step);
+                const endAngle = currentRotation + ((i + 1) * step);
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.fillStyle = wheelColors[i % wheelColors.length];
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(startAngle + step / 2);
+                
+                const imgObj = loadedImages[name];
+                
+                if (imgObj) {
+                    // Lógica para dibujar la imagen centrada en el segmento
+                    
+                    // 1. Calcular el espacio máximo disponible para la imagen
+                    const maxRadius = radius * 0.8; // Máximo 80% del radio para dejar espacio en los bordes
+                    const minRadius = radius * 0.2; // La imagen no debe estar muy cerca del centro
+                    const availableWidth = maxRadius - minRadius;
+
+                    // 2. Escalar la imagen para que encaje
+                    const maxH = availableWidth * 0.8; 
+                    const maxW = 2 * maxH * Math.tan(step / 2); // Ancho máximo basado en la apertura del segmento
+                    
+                    const scale = Math.min(maxH / imgObj.height, maxW / imgObj.width, 1);
+                    const drawW = imgObj.width * scale * 0.8; 
+                    const drawH = imgObj.height * scale * 0.8;
+                    
+                    // 3. Calcular la posición de dibujo (Centrada en el segmento)
+                    // Dibujamos la imagen a una distancia promedio del centro (alrededor de 50-70% del radio)
+                    const distanceFactor = 0.6; 
+                    const drawX = radius * distanceFactor - drawW / 2;
+                    const drawY = -drawH / 2;
+
+                    // 4. Dibujar la imagen
+                    ctx.drawImage(imgObj, drawX, drawY, drawW, drawH);
+
+                } else {
+                    ctx.textAlign = 'right';
+                    ctx.fillStyle = wheelFontColor;
+                    ctx.font = `bold ${wheelFontSize}px ${wheelFontFamily.replace(/'/g, "")}`;
+                    ctx.shadowColor = "rgba(0,0,0,0.3)";
+                    ctx.shadowBlur = 4;
+                    
+                    let text = name;
+                    const maxTextWidth = radius - 40;
+                    if (ctx.measureText(text).width > maxTextWidth) {
+                        while (ctx.measureText(text + '...').width > maxTextWidth && text.length > 0) {
+                            text = text.substring(0, text.length - 1);
+                        }
+                        text += '...';
+                    }
+                    
+                    ctx.fillText(text, radius - 20, 8);
+                }
+                
+                ctx.restore();
+            });
+
+            // Ticks
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(currentRotation);
+            const totalTicks = 60; 
+            for (let i = 0; i < totalTicks; i++) {
+                const angle = (i / totalTicks) * (2 * Math.PI);
+                const tickLength = 10;
+                const outerR = radius;
+                const innerR = radius - tickLength;
+                const x1 = Math.cos(angle) * outerR;
+                const y1 = Math.sin(angle) * outerR;
+                const x2 = Math.cos(angle) * innerR;
+                const y2 = Math.sin(angle) * innerR;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            if (showIntroText) {
+                drawCurvedText(translations[currentLang].wheel_click_spin, radius * 0.6, true);
+                drawCurvedText(translations[currentLang].wheel_ctrl_enter, radius * 0.6, false);
+            }
+        }
+
+        function drawCurvedText(text, radius, isTop) {
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            ctx.font = "800 40px Quicksand, sans-serif";
+            ctx.fillStyle = "white";
+            ctx.shadowColor = "rgba(0,0,0,1)"; 
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 4;
+            ctx.shadowOffsetY = 4;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            if (text.length > 20) ctx.font = "800 32px Quicksand, sans-serif";
+
+            const totalWidth = ctx.measureText(text).width;
+            const totalAngle = (totalWidth / radius) * 1.3; 
+            const startAngle = -totalAngle / 2;
+            let currentAngle = startAngle;
+
+            text.split('').forEach((char) => {
+                const charWidth = ctx.measureText(char).width;
+                const charAngle = (charWidth / radius) * 1.3; 
+                ctx.save();
+                const rotateAngle = currentAngle + (charAngle / 2);
+                
+                if (isTop) {
+                   ctx.rotate(rotateAngle);
+                   ctx.translate(0, -radius);
+                } else {
+                   ctx.rotate(Math.PI - rotateAngle);
+                   ctx.translate(0, -radius);
+                   ctx.rotate(-Math.PI);
+                }
+                ctx.fillText(char, 0, 0);
+                ctx.restore();
+                currentAngle += charAngle;
+            });
+            ctx.restore();
+        }
+
+        function updatePointerColor() {
+            if (names.length === 0) return;
+            const step = (2 * Math.PI) / names.length;
+            const normalizedRotation = currentRotation % (2 * Math.PI);
+            let currentIndex = Math.floor(((2 * Math.PI) - normalizedRotation) / step) % names.length;
+            if (currentIndex < 0) currentIndex += names.length;
+            const currentColor = wheelColors[currentIndex % wheelColors.length];
+            const ptr = document.getElementById('pointer-path');
+            if(ptr) ptr.setAttribute('fill', currentColor);
+        }
+
+        function determineWinner() {
+            const step = (2 * Math.PI) / names.length;
+            const normalizedRotation = currentRotation % (2 * Math.PI);
+            let winningIndex = Math.floor(((2 * Math.PI) - normalizedRotation) / step) % names.length;
+            if (winningIndex < 0) winningIndex += names.length;
+
+            const winner = names[winningIndex];
+            const winningColor = wheelColors[winningIndex % wheelColors.length];
+            
+            winnerIndex = winningIndex;
+            addResult(winner);
+            showWinner(winner, winningColor);
+        }
+
+        // UPDATED: Centralized and simplified spin trigger
+        function startSpin() {
+            // Removed event argument and stopPropagation since validation happens here
+            if (isSpinning || names.length === 0) return;
+            showIntroText = false; 
+            isSpinning = true;
+            spinVelocity = Math.random() * 0.5 + 0.5; 
+        }
+
+        function showWinner(name, color) {
+            const modal = document.getElementById('winnerModal');
+            const content = document.getElementById('modalContent');
+            const nameEl = document.getElementById('winnerName');
+            const winnerContainer = document.getElementById('winnerContainer');
+            const titleEl = document.getElementById('winnerTextTitle');
+            
+            winnerContainer.innerHTML = '';
+            
+            if (loadedImages[name]) {
+                const img = loadedImages[name].cloneNode();
+                img.className = "max-w-full max-h-[200px] object-contain drop-shadow-lg rounded-lg";
+                winnerContainer.appendChild(img);
+            } else {
+                const div = document.createElement('div');
+                div.className = "text-6xl font-extrabold transition-colors duration-200";
+                div.innerText = name;
+                div.id = "winnerName";
+                
+                const textColor = getContrastColor(color);
+                div.style.color = textColor;
+                winnerContainer.appendChild(div);
+            }
+            
+            content.style.backgroundColor = color;
+            const textColor = getContrastColor(color);
+            titleEl.style.color = textColor;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-90');
+                content.classList.add('scale-100');
+            }, 10);
+
+            playWinSound();
+            fireConfetti();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('winnerModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-90');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function removeWinner() {
+            if (winnerIndex > -1) {
+                names.splice(winnerIndex, 1);
+                document.getElementById('namesInput').value = names.join('\n');
+                updateNamesFromInput();
+                closeModal();
+            }
+        }
+
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 60 };
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        function shuffleNames() {
+            if(isSpinning) return;
+            const val = document.getElementById('namesInput').value.split('\n').filter(n => n.trim() !== '');
+            for (let i = val.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [val[i], val[j]] = [val[j], val[i]];
+            }
+            document.getElementById('namesInput').value = val.join('\n');
+            updateNamesFromInput();
+        }
+
+        function sortNames() {
+            if(isSpinning) return;
+            const val = document.getElementById('namesInput').value.split('\n').filter(n => n.trim() !== '');
+            val.sort((a, b) => a.localeCompare(b));
+            document.getElementById('namesInput').value = val.join('\n');
+            updateNamesFromInput();
+        }
+
+        document.getElementById('namesInput').addEventListener('input', updateNamesFromInput);
+        
+        // Start
+        init();
+    </script>
+</body>
+</html>
